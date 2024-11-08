@@ -29,7 +29,13 @@ fn final_format(input: Vec<Vec<String>>) -> String{
         let row_size = input[i].len();
         formatted += &*format!("{}\t", hex::encode(hex_offset.to_be_bytes()));
         for x in 0..row_size{
+            if x == 0 {
+                formatted += "| ";
+            }
             formatted += &*format!("{} ", input[i][x]);
+            if x+1 == row_size{
+                formatted += " |";
+            }
         }
         hex_offset += 16;
         formatted += "\n";
@@ -40,7 +46,7 @@ fn final_format(input: Vec<Vec<String>>) -> String{
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        println!("No file specified");
+        println!("Error: No file specified\n");
         return;
     }
     let file_content = read_file_content(&args[1]);
