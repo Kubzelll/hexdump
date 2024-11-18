@@ -1,9 +1,19 @@
 use std::env;
 use std::fs;
+use std::io::{Error, ErrorKind};
 
-//TODO: Add handling if file doesn't exist
-fn read_file_content(filename: &str) -> Vec<u8>{
-    fs::read(filename).unwrap()
+
+fn read_file_content(filename: &str) -> Result<Vec<u8>, Error> {
+    let read = fs::read(filename);
+    match read{
+        Ok(_) => {
+            Ok(read?)
+        }
+        Err(_) => {
+            Err(Error::new(ErrorKind::Other, "Could not read file"))
+        }
+    }
+    
 }
 fn chunk_hex(input: String) -> Vec<String>{
     input
@@ -49,10 +59,16 @@ fn main() {
         println!("Error: No file specified\n");
         return;
     }
-    let file_content = read_file_content(&args[1]);
-    let hex_value = chunk_hex(hex::encode(file_content));
-    let parsed_hex = parse_hex(hex_value);
-    println!("{}", final_format(parsed_hex));
+    match read_file_content(&args[1]){
+        Ok(content) => {
+            let hex_value = chunk_hex(hex::encode(content));
+            let parsed_hex = parse_hex(hex_value);
+            println!("{}", final_format(parsed_hex));
+        }
+        _ => {
+            println!("Error: Could not read file\n");
+            return;
+        }
+    }
     
-
 }
